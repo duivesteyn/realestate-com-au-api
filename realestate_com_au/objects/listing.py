@@ -64,8 +64,9 @@ def parse_price_text(price_display_text):
 
         price *= 1000
     elif price_text[-1] == "m" or price_text[-1] == "M":
+        if '.' in price_text: price_text = price_text.replace('.','')  #Need to remove errand decimal(s) - ref "1.199.000M"
         price = float(price_text[:-1].replace(",", ""))
-        price *= 1000000
+        if price < 20: price *= 1000000 #Only multiply if we ended up with a number that needs to be multiplied ref "1.199.000M"
     else:
         price = float(price_text.replace(",", "").split('.')[0])
 
@@ -181,3 +182,12 @@ def get_listing(listing):
         images_floorplans=images_floorplans,
         listers=listers,
     )
+
+if __name__ == "__main__":
+    pass
+
+    test_txt = 'from $1.199.000M'
+
+    print(f'👍👍👍Testing Phrase: {test_txt} 👍👍👍')
+    x = parse_price_text(test_txt)
+    print(x)
