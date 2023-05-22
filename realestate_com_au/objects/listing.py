@@ -184,10 +184,31 @@ def get_listing(listing):
     )
 
 if __name__ == "__main__":
-    pass
 
-    test_txt = 'from $1.199.000M'
 
-    print(f'👍👍👍Testing Phrase: {test_txt} 👍👍👍')
-    x = parse_price_text(test_txt)
-    print(x)
+    # Test the code with example values
+    test_values = [
+        '$4M',
+        '250K',
+        '500,000',
+        '565-575K',
+        '$1M - $1.1M',
+        '$350,000 - $380,000',
+        '565-575K',
+        '565k to 570k',
+        '$420-440K',
+        '$1.55 - $1.65 Best Offers By Mon 21st Nov at 10am',
+        '1050K to 1090K',
+        'from $1.199.000M',
+        '$209 - $239,000',
+        '690,000-720,000',
+        '$1.1-1.15m',
+        '$1M - $1.1M',
+        ''
+    ]
+
+
+    for test_txt in test_values:
+        print(f'👍👍👍Testing Phrase: {test_txt}')
+        x = parse_price_text(test_txt)
+        print(f'✨✨✨ Output: {x}')
