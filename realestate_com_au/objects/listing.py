@@ -48,23 +48,29 @@ class Lister:
 class MediaItem:
     link: str
 
-def parse_price_text(range_str):
+def parse_price_text(price_display_text):
+    regex = r".*\$([0-9\,\.]+(?:k|K|m|M)*).*"
+    price_groups = re.search(regex, price_display_text)
+    price_text = (
+        price_groups.groups()[
+            0] if price_groups and price_groups.groups() else None
+    )
+    if price_text is None:
+        return None
 
-    # Remove non-digit characters and convert 'M' to '000000'
-    range_str = re.sub(r'[^\d.-]', '', range_str)
-    range_str = range_str.replace('M', '000000')
-    
-    # Extract lower and higher values from the range
-    match = re.search(r'([\d.-]+)-([\d.-]+)', range_str)
-    if match:
-        lower = float(match.group(1))
-        higher = float(match.group(2))
+    price = None
+    if price_text[-1] == "k" or price_text[-1] == "K":
+        price = float(price_text[:-1].replace(",", ""))
+
+        price *= 1000
+    elif price_text[-1] == "m" or price_text[-1] == "M":
+        if '.' in price_text: price_text = price_text.replace('.','')  #Need to remove errand decimal(s) - ref "1.199.000M"
+        price = float(price_text[:-1].replace(",", ""))
+        if price < 20: price *= 1000000 #Only multiply if we ended up with a number that needs to be multiplied ref "1.199.000M"
     else:
-        # If no range is found, assume it's a single value
-        lower = float(range_str)
-        higher = lower
-        
-    return int(higher)
+        price = float(price_text.replace(",", "").split('.')[0])
+
+    return int(price)
 
 
 def parse_phone(phone):
@@ -180,32 +186,8 @@ def get_listing(listing):
 if __name__ == "__main__":
     pass
 
-    # Test the code with example values
-    test_values = [
-        '$4M',
-        '250K',
-        '500,000',
-        '565-575K',
-        '$1M - $1.1M',
-        '$350,000 - $380,000',
-        '565-575K',
-        '565k to 570k',
-        '$420-440K',
-        '$1.55 - $1.65 Best Offers By Mon 21st Nov at 10am',
-        '1050K to 1090K',
-        'from $1.199.000M',
-        '$209 - $239,000',
-        '690,000-720,000',
-        '$1.1-1.15m',
-        '$1M - $1.1M'
-    ]
+    test_txt = 'from $1.199.000M'
 
-    test_txt = '565-575K' 
-    test_txt = '$1M - $1.1M' 
-    test_txt = '$350,000 - $380,000'    #COMMON FORMAT !!
-    test_txt = '565-575K'  
-    test_txt = '120,000.00'  
-
-    print(f'👍👍👍Testing Phrase: {test_txt}')
+    print(f'👍👍👍Testing Phrase: {test_txt} 👍👍👍')
     x = parse_price_text(test_txt)
-    print(f'✨✨✨ Output: {x}')
+    print(x)
